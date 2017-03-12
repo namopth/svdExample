@@ -5,7 +5,10 @@
 #include <string>
 #include <assert.h>
 
-#define MATRIX_COLUMN_MAJOR
+// SIMPLE and SUPER SLOW NM-dimension Matrix Processing Class
+// Used to demonstrating a singular value decomposition algorithm
+
+#define MATRIX_COLUMN_MAJOR // Matrix data storing layout definition
 
 class Matrix
 {
@@ -21,10 +24,10 @@ public:
 	}
 
 	Matrix(const Matrix& rhs)
+		: m_pData(nullptr)
+		, m_uiCol(rhs.m_uiCol)
+		, m_uiRow(rhs.m_uiRow)
 	{
-		m_uiCol = rhs.m_uiCol;
-		m_uiRow = rhs.m_uiRow;
-
 		m_pData = new float[m_uiCol*m_uiRow];
 
 		for (unsigned int i = 0; i < m_uiCol * m_uiRow; i++)
@@ -58,7 +61,7 @@ public:
 #endif
 	}
 
-	std::string ToString()
+	const std::string ToString() const
 	{
 		std::string result = "";
 		for (unsigned int r = 0; r < m_uiRow; r++)
@@ -66,7 +69,7 @@ public:
 			result += "[\t";
 			for (unsigned int c = 0; c < m_uiCol; c++)
 			{
-				result += std::to_string(At(c, r));
+				result += std::to_string(Get(c, r));
 				result += "\t";
 			}
 			result += "]\n";
@@ -85,6 +88,11 @@ public:
 		return result;
 	}
 
+	void Identity()
+	{
+		*this = Identity(m_uiCol, m_uiRow);
+	}
+
 	static Matrix Multiply(const Matrix& lhs, const Matrix& rhs)
 	{
 		assert(lhs.GetColSize() == rhs.GetRowSize());
@@ -96,12 +104,22 @@ public:
 				float sum = 0.f;
 				for (unsigned int k = 0; k < lhs.GetColSize(); k++)
 				{
-					sum += lhs.Get(k, i) * rhs.Get(j, k);
+					sum += lhs.Get(k, j) * rhs.Get(i, k);
 				}
 				result.At(i, j) = sum;
 			}
 		}
 		return result;
+	}
+
+	Matrix Multiply(const Matrix& rhs)
+	{
+		return Multiply(*this, rhs);
+	}
+
+	Matrix operator*(const Matrix& rhs)
+	{
+		return Multiply(rhs);
 	}
 
 private:
