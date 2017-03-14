@@ -88,9 +88,9 @@ public:
 		return result;
 	}
 
-	void Identity()
+	Matrix Identity()
 	{
-		*this = Identity(m_uiCol, m_uiRow);
+		return Identity(m_uiCol, m_uiRow);
 	}
 
 	static Matrix Multiply(const Matrix& lhs, const Matrix& rhs)
@@ -120,6 +120,24 @@ public:
 	Matrix operator*(const Matrix& rhs)
 	{
 		return Multiply(rhs);
+	}
+
+	static Matrix Transpose(const Matrix& rhs)
+	{
+		Matrix result(rhs);
+		for (unsigned int i = 0; i < result.GetColSize(); i++)
+		{
+			for (unsigned int j = 0; j < result.GetRowSize(); j++)
+			{
+				result.At(i, j) = rhs.Get(j, i);
+			}
+		}
+		return result;
+	}
+
+	Matrix Transpose()
+	{
+		return Transpose(*this);
 	}
 
 private:
