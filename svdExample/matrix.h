@@ -34,6 +34,18 @@ public:
 			m_pData[i] = rhs.m_pData[i];
 	}
 
+	Matrix& operator=(const Matrix& rhs)
+	{
+		if (m_pData)
+			delete[] m_pData;
+		m_uiCol = rhs.m_uiCol;
+		m_uiRow = rhs.m_uiRow;
+		m_pData = new float[m_uiCol*m_uiRow];
+		for (unsigned int i = 0; i < m_uiCol * m_uiRow; i++)
+			m_pData[i] = rhs.m_pData[i];
+		return *this;
+	}
+
 	~Matrix()
 	{
 		if(m_pData)
@@ -83,12 +95,13 @@ public:
 	static Matrix Identity(const unsigned int col, const unsigned int row)
 	{
 		Matrix result(col, row);
-		for (unsigned int i = 0; i < (std::min)(col, row); i++)
-			result.At(i, i) = 1.f;
+		for (unsigned int i = 0; i < col; i++)
+			for (unsigned int j = 0; j < row; j++)
+				result.At(i, j) = (i == j) ? 1.f : 0.f;
 		return result;
 	}
 
-	Matrix Identity()
+	Matrix Identity() const
 	{
 		return Identity(m_uiCol, m_uiRow);
 	}
@@ -112,12 +125,12 @@ public:
 		return result;
 	}
 
-	Matrix Multiply(const Matrix& rhs)
+	Matrix Multiply(const Matrix& rhs) const
 	{
 		return Multiply(*this, rhs);
 	}
 
-	Matrix operator*(const Matrix& rhs)
+	Matrix operator*(const Matrix& rhs) const
 	{
 		return Multiply(rhs);
 	}
@@ -135,7 +148,7 @@ public:
 		return result;
 	}
 
-	Matrix Transpose()
+	Matrix Transpose() const
 	{
 		return Transpose(*this);
 	}
